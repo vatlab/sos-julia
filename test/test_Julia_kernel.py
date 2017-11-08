@@ -29,9 +29,9 @@
 #
 import os
 import unittest
-from ipykernel.tests.utils import assemble_output, execute, wait_for_idle
+from ipykernel.tests.utils import execute, wait_for_idle
 from sos_notebook.test_utils import sos_kernel, get_result, get_display_data, \
-    clear_channels
+    clear_channels, get_std_output
 
 class TestJuliaKernel(unittest.TestCase):
     #
@@ -61,7 +61,7 @@ df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
 ''')
             clear_channels(iopub)
             execute(kc=kc, code="%use Julia")
-            _, stderr = assemble_output(iopub)
+            _, stderr = get_std_output(iopub)
             self.assertEqual(stderr, '', "GOT ERROR {}".format(stderr))
             execute(kc=kc, code="%get df")
             wait_for_idle(kc)
