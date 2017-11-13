@@ -36,19 +36,23 @@ def homogeneous_type(seq):
     else:
         return True if all(isinstance(x, first_type) for x in iseq) else False
 
-#
-
-# julia    length (n)    Python
-# NaN        None
-# boolean    1    boolean
-# integer    1    integer
-# float64    1    double
-# character    1    unicode
-# string          string
-# list    n > 0    list
-# lict    n > 0    dict
-# matrix    n > 0    matrix
-# data.frame    n > 0    DataFrame
+'''
+NaN		None
+Bool		boolean
+Int64		integer
+Float64		double
+Char		str
+Complex{}		complex
+Float64		numpy.float64
+String		str
+Array{,1}		Sequence (list,tuple, ...)
+Set{}		set
+Dict{}		dict
+Array{Int64/Float64,2}	2 dimensions	numpy.matrix
+Array{Int64/Float64,}	> 2 dimensions	numpy.ndarray
+NamedArrays.NamedArray	1 dimension	pandas.Series
+Dataframes.Dataframe		pandas.DataFrame
+'''
 
 julia_init_statements = r'''
 try
@@ -185,6 +189,8 @@ function __julia_py_repr(obj)
   elseif isa(obj, Float64)
     __julia_py_repr_double_1(obj)
   elseif isa(obj, String)
+    __julia_py_repr_character_1(obj)
+  elseif isa(obj, Char)
     __julia_py_repr_character_1(obj)
   elseif isa(obj, Bool)
     __julia_py_repr_logical_1(obj)
