@@ -191,11 +191,11 @@ function __julia_py_repr(obj)
   elseif isa(obj, String)
     __julia_py_repr_character_1(obj)
   elseif isa(obj, Char)
-    __julia_py_repr_character_1(obj)
+    __julia_py_repr_character_1(string(obj))
   elseif isa(obj, Bool)
     __julia_py_repr_logical_1(obj)
   else
-    return "'Untransferrable variable'"
+    return "'Un'"
   end
 end
 '''
