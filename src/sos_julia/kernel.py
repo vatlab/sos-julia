@@ -195,7 +195,7 @@ function __julia_py_repr(obj)
   elseif isa(obj, Bool)
     __julia_py_repr_logical_1(obj)
   else
-    return "'Un'"
+    return "'Untransferrable variable'"
   end
 end
 '''
