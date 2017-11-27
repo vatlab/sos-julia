@@ -121,7 +121,7 @@ num_var = 123
 import numpy
 import pandas
 num_arr_var = numpy.array([1, 2, 3])
-logic_var = True
+logisingle_char_var = True
 logic_arr_var = [True, False, True]
 char_var = '1"23'
 char_arr_var = ['1', '2', '3']
@@ -135,21 +135,21 @@ seri_var = pandas.Series([1,2,3,3,3,3])
             wait_for_idle(kc)
             execute(kc=kc, code='''
 %use Julia
-%get num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%get num_var num_arr_var logisingle_char_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 %dict -r
-%put num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%put num_var num_arr_var logisingle_char_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 %use sos
 seri_var = list(seri_var)
 ''')
             wait_for_idle(kc)
             execute(kc=kc, code='''
-%dict num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%dict num_var num_arr_var logisingle_char_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 ''')
             res = get_result(iopub)
             #self.assertEqual(res['null_var'], None)
             self.assertEqual(res['num_var'], 123)
             self.assertEqual(list(res['num_arr_var']), [1,2,3])
-            self.assertEqual(res['logic_var'], True)
+            self.assertEqual(res['logisingle_char_var'], True)
             self.assertEqual(res['logic_arr_var'], [True, False, True])
             self.assertEqual(res['char_var'], '1"23')
             self.assertEqual(res['char_arr_var'], ['1', '2', '3'])
@@ -175,7 +175,7 @@ seri_var = list(seri_var)
             wait_for_idle(kc)
             execute(kc=kc, code="num_arr_var = [1, 2, 3]")
             wait_for_idle(kc)
-            execute(kc=kc, code="logic_var = true")
+            execute(kc=kc, code="logisingle_char_var = true")
             wait_for_idle(kc)
             execute(kc=kc, code="logic_arr_var = [true, true, false]")
             wait_for_idle(kc)
@@ -193,9 +193,11 @@ seri_var = list(seri_var)
             wait_for_idle(kc)
             execute(kc=kc, code="comp_var = 1+2im")
             wait_for_idle(kc)
+            execute(kc=kc, code="single_char_var = 'a'")
+            wait_for_idle(kc)
             #execute(kc=kc, code="seri_var = setNames(c(1,2,3,3,3,3),c(0:5))")
             #wait_for_idle(kc)
-            execute(kc=kc, code="%put null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var recursive_var comp_var")
+            execute(kc=kc, code="%put null_var num_var num_arr_var logisingle_char_var logic_arr_var char_var char_arr_var mat_var recursive_var comp_var single_char_var")
             wait_for_idle(kc)
             execute(kc=kc, code='''
 %use sos
@@ -207,12 +209,12 @@ seri_var = list(seri_var)
 #named_list_var = list(named_list_var)
 #''')
             wait_for_idle(kc)
-            execute(kc=kc, code="%dict null_var num_var num_arr_var logic_var logic_arr_var char_var char_arr_var mat_var recursive_var comp_var")
+            execute(kc=kc, code="%dict null_var num_var num_arr_var logisingle_char_var logic_arr_var char_var char_arr_var mat_var recursive_var comp_var single_char_var")
             res = get_result(iopub)
             self.assertEqual(res['null_var'], None)
             self.assertEqual(res['num_var'], 123)
             self.assertEqual(list(res['num_arr_var']), [1,2,3])
-            self.assertEqual(res['logic_var'], True)
+            self.assertEqual(res['logisingle_char_var'], True)
             self.assertEqual(res['logic_arr_var'], [True, True, False])
             self.assertEqual(res['char_var'], '1"23')
             self.assertEqual(res['char_arr_var'], [1, 2, '3'])
@@ -220,6 +222,7 @@ seri_var = list(seri_var)
             self.assertEqual(res['mat_var'].shape, (2,2))
             self.assertEqual(res['recursive_var'], {'a': 1, 'b': {'c': 3}, 'd': 'whatever'})
             self.assertEqual(res['comp_var'], 1+2j)
+            self.assertEqual(res['single_char_var'], 'a')
             #self.assertEqual(res['seri_var'], [1,2,3,3,3,3])
             execute(kc=kc, code="%use sos")
             wait_for_idle(kc)
