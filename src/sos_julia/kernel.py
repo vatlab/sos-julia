@@ -60,8 +60,7 @@ try
   using Feather
 catch
   Pkg.add("Feather")
-  using 
-  Feather
+  using Feather
 end
 ''',
    'namedarray':  r'''
@@ -203,10 +202,10 @@ function __julia_py_repr(obj)
     __julia_py_repr_character_1(string(obj))
   elseif isa(obj, Bool)
     __julia_py_repr_logical_1(obj)
-  elif str(typeof(obj)).startswith('DataFrame')
-       __julia_py_repr_dataframe(obj)
-  elseif isa(obj, NamedArrays.NamedArray{Int64,1,Array{Int64,1}})
-      return __julia_py_repr_namedarray(obj)
+  elseif startswith(string(typeof(obj)),"DataFrame")
+    __julia_py_repr_dataframe(obj)
+  elseif startswith(string(typeof(obj)),"NamedArray")
+    return __julia_py_repr_namedarray(obj)
   else
     return "'Untransferrable variable'"
   end
