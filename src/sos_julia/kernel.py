@@ -224,6 +224,19 @@ class sos_Julia:
         self.sos_kernel = sos_kernel
         self.kernel_name = kernel_name
         self.init_statements = julia_init_statements
+        self.loaded = set()
+
+    def load(self, package):
+        if package in self.loaded:
+            return True
+        if package in julia_install_package:
+            self.sos_kernel.run_cell(julia_install_package[package], True, False,
+                    on_error=f'Install of package {package} is not supported.')
+            self.loaded.add(package)
+            return True
+        else:
+            self.sos_kernel.warn(f'Install of package {package} is not supported.')
+            return False
 
 #  support for %get
 #
@@ -312,6 +325,8 @@ class sos_Julia:
             else:
                 newname = name
             julia_repr = self._julia_repr(env.sos_dict[name])
+            if 'Feather.' in julia_repr:
+                self.load('feather')
             self.sos_kernel.run_cell('{} = {}'.format(newname, julia_repr), True, False,
                                      on_error='Failed to put variable {} to julia'.format(name))
 
@@ -342,10 +357,7 @@ class sos_Julia:
 
                 if expr.startswith('"SOS_JULIA_REQUIRE:'):
                     package = expr.split(':')[1].rstrip('"')
-                    if package in julia_install_package:
-                        self.sos_kernel.get_response(julia_install_package[package], ('stream',), name=('stdout',))
-                    else:
-                        self.sos_kernel.warn(f'Install of package {package} is not supported.')
+                    if not self.load(package):
                         break
                 else:
                     break
