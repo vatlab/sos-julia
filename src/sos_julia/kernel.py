@@ -54,31 +54,35 @@ NamedArrays.NamedArray	1 dimension	pandas.Series
 Dataframes.Dataframe		pandas.DataFrame
 '''
 
-julia_init_statements = r'''
+julia_install_package = {
+   'feather': r'''
 try
   using Feather
 catch
   Pkg.add("Feather")
-  using Feather
+  using 
+  Feather
 end
+''',
+   'namedarray':  r'''
 try
   using NamedArrays
 catch
   Pkg.add("NamedArrays")
   using NamedArrays
 end
+''',
+    'dataframes': r'''
 try
   using DataFrames
 catch
   Pkg.add("DataFrames")
   using DataFrames
 end
-try
-  using NamedArrays
-catch
-  Pkg.add("NamedArrays")
-  using NamedArrays
-end
+'''
+}
+
+julia_init_statements = r'''
 function __julia_py_repr_logical_1(obj)
     obj==true ? "True" : "False"
 end
@@ -108,11 +112,20 @@ end
 # Dataframe in Julia doesn't have rowname. Will keep tracking any update of Dataframes package in Julia
 function __julia_py_repr_dataframe(obj)
   tf = joinpath(tempname())
+  if !isdefined(:Feather)
+    return "SOS_JULIA_REQUIRE:feather"
+  end
   Feather.write(tf, obj)
   return "read_dataframe(r'" * tf * "')"
 end
 function __julia_py_repr_matrix(obj)
   tf = joinpath(tempname())
+  if !isdefined(:DataFrame)
+    return "SOS_JULIA_REQUIRE:dataframes"
+  end
+  if !isdefined(:Feather)
+    return "SOS_JULIA_REQUIRE:feather"
+  end
   Feather.write(tf, convert(DataFrame, obj))
   return "numpy.asmatrix(read_dataframe(r'" * tf * "'))"
 end
@@ -140,8 +153,6 @@ function __julia_py_repr(obj)
     __julia_py_repr_matrix(obj)
   elseif isa(obj, Set)
     __julia_py_repr_set(obj)
-  elseif isa(obj, DataFrame)
-    __julia_py_repr_dataframe(obj)
   # type of NaN in Julia is Float64
   elseif isa(obj, Void) || obj === NaN
     return "None"
@@ -180,8 +191,6 @@ function __julia_py_repr(obj)
     else
       return "[" * join([__julia_py_repr_logical_1(i) for i in obj], ",") * "]"
     end
-  elseif isa(obj, NamedArrays.NamedArray{Int64,1,Array{Int64,1}})
-      return __julia_py_repr_namedarray(obj)
   elseif isa(obj, Int)
     __julia_py_repr_integer_1(obj)
   elseif isa(obj, Complex)
@@ -194,6 +203,10 @@ function __julia_py_repr(obj)
     __julia_py_repr_character_1(string(obj))
   elseif isa(obj, Bool)
     __julia_py_repr_logical_1(obj)
+  elif str(typeof(obj)).startswith('DataFrame')
+       __julia_py_repr_dataframe(obj)
+  elseif isa(obj, NamedArrays.NamedArray{Int64,1,Array{Int64,1}})
+      return __julia_py_repr_namedarray(obj)
   else
     return "'Untransferrable variable'"
   end
@@ -318,9 +331,25 @@ class sos_Julia:
 
         res = {}
         for item in items:
-            py_repr = '__julia_py_repr({})'.format(item)
-            response = self.sos_kernel.get_response(py_repr, ('execute_result',))[0][1]
-            expr = response['data']['text/plain']
+            while True:
+                #
+                # Issue #3: Beause it takes a long time to load Julia Module, we do not import
+                # dataframe, namedarray etc when Julia starts. Rather, we generate an error
+                # message if thosse packages are needed and "using" or "Add" them when needed.
+                #
+                py_repr = '__julia_py_repr({})'.format(item)
+                response = self.sos_kernel.get_response(py_repr, ('execute_result',))[0][1]
+                expr = response['data']['text/plain']
+
+                if expr.startswith('"SOS_JULIA_REQUIRE:'):
+                    package = expr.split(':')[1].rstrip('"')
+                    if package in julia_install_package:
+                        self.sos_kernel.get_response(julia_install_package[package], ('stream',), name=('stdout',))
+                    else:
+                        self.sos_kernel.warn(f'Install of package {package} is not supported.')
+                        break
+                else:
+                    break
 
             try:
                 if 'read_dataframe' in expr:
