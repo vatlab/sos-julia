@@ -329,6 +329,15 @@ class sos_Julia:
                 self.load('feather')
             self.sos_kernel.run_cell('{} = {}'.format(newname, julia_repr), True, False,
                                      on_error='Failed to put variable {} to julia'.format(name))
+            if 'NamedArray.' in julia_repr:
+                self.load('namedarray')
+            self.sos_kernel.run_cell('{} = {}'.format(newname, julia_repr), True, False,
+                                     on_error='Failed to put variable {} to julia'.format(name))
+            if 'DataFrame' in julia_repr:
+                self.load('dataframes')
+            self.sos_kernel.run_cell('{} = {}'.format(newname, julia_repr), True, False,
+                                     on_error='Failed to put variable {} to julia'.format(name))
+
 
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
