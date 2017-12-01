@@ -327,7 +327,7 @@ class sos_Julia:
             julia_repr = self._julia_repr(env.sos_dict[name])
             if 'Feather.' in julia_repr:
                 self.load('feather')
-            if 'NamedArray.' in julia_repr:
+            if 'NamedArray' in julia_repr:
                 self.load('namedarray')
             if 'DataFrame' in julia_repr:
                 self.load('dataframes')
