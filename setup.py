@@ -55,13 +55,10 @@ setup(name = "sos-julia",
     packages = find_packages('src'),
     package_dir = {'': 'src'},
     install_requires=[
-          'sos>=0.9.10.11',
+          'sos>=0.9.12.0',
           'sos-notebook>=0.9.10.9',
       ],
     entry_points= '''
-[sos_actions]
-julia = sos_julia.actions:julia
-
 [sos_languages]
 Julia = sos_julia.kernel:sos_Julia
 '''
