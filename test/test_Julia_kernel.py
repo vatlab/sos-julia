@@ -133,7 +133,7 @@ comp_var = 1+2j
 seri_var = pandas.Series([1,2,3,3,3,3])
 ''')
             wait_for_idle(kc)
-            execute(kc=kc, code='''
+            execute(kc=kc, code='''\
 %use Julia
 %get num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 %dict -r
