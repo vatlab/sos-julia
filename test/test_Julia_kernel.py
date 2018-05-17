@@ -67,7 +67,7 @@ df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
             wait_for_idle(kc)
             execute(kc=kc, code="size(df)")
             res = get_display_data(iopub)
-            self.assertEqual(res, '(1000, 10)')
+            self.assertEqual(res, '(1000,10)')
             execute(kc=kc, code="%use sos")
             wait_for_idle(kc)
         
