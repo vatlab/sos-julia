@@ -219,6 +219,7 @@ class sos_Julia:
     options = {
         'assignment_pattern': r'^([_A-Za-z0-9\.]+)\s*=.*$'
         }
+    cd_command = 'cd("{dir}")'
 
     def __init__(self, sos_kernel, kernel_name='julia-0.6'):
         self.sos_kernel = sos_kernel
