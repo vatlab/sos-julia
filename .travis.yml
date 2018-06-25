@@ -23,11 +23,12 @@ before_install:
     - source activate python_test
     - pip install docker rq
     - pip install pyyaml psutil tqdm nose
-    - pip install fasteners pygments networkx pydot pydotplus 
+    - pip install fasteners pygments networkx pydot pydotplus
     - pip install entrypoints jupyter coverage codacy-coverage pytest pytest-cov python-coveralls
     - conda install pandas numpy
 
     # SoS Notebook
+    - sudo apt-get install libmagickwand-dev libmagickcore5-extra graphviz
     - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
     - pip install pygments ipython wand graphviz sos sos-notebook
     - python -m sos_notebook.install
@@ -52,11 +53,7 @@ install: "pip install . -U"
 before_script:
     - cd test
 script:
-    - pytest -x -v --cov sos_julia --cov-report=xml
-      
-after_success:
-    - coverage combine
-    - coveralls
+    - pytest -x -v
 
 notifications:
     email:
@@ -64,4 +61,3 @@ notifications:
             - ben.bob@gmail.com
         on_success: never
         on_failure: always
-
