@@ -12,6 +12,9 @@
 #
 import os
 import unittest
+import ipykernel.tests.utils
+ipykernel.tests.utils.TIMEOUT = 180
+
 from ipykernel.tests.utils import execute, wait_for_idle
 from sos_notebook.test_utils import sos_kernel, get_result, get_display_data, \
     clear_channels, get_std_output
@@ -51,8 +54,7 @@ df = pd.DataFrame({'column_{0}'.format(i): arr for i in range(10)})
             wait_for_idle(kc)
             execute(kc=kc, code="size(df)")
             res = get_display_data(iopub)
-            self.assertEqual(res[0], 1000)
-            self.assertEqual(res[1], 10)
+            self.assertEqual(res, '(1000, 10)')
             execute(kc=kc, code="%use sos")
             wait_for_idle(kc)
 
@@ -147,7 +149,6 @@ seri_var = list(seri_var)
             self.assertEqual(res['comp_var'], 1 + 2j)
             self.assertEqual(res['seri_var'], [1, 2, 3, 3, 3, 3])
 
-# dataframe
 
     def testPutJuliaDataToPython(self):
         with sos_kernel() as kc:
@@ -160,7 +161,7 @@ num_var = 123
 num_arr_var = [1, 2, 3]
 logic_var = true
 logic_arr_var = [true, true, false]
-char_var = "1\"23"
+char_var = "123"
 char_arr_var = [1, 2, "3"]
 using NamedArrays
 named_list_var = NamedArray([1,2,3],(["a","b","c"],))
@@ -179,7 +180,7 @@ single_char_var = 'a'
             self.assertEqual(list(res['num_arr_var']), [1, 2, 3])
             self.assertEqual(res['logic_var'], True)
             self.assertEqual(res['logic_arr_var'], [True, True, False])
-            self.assertEqual(res['char_var'], '1"23')
+            self.assertEqual(res['char_var'], '123')
             self.assertEqual(res['char_arr_var'], [1, 2, '3'])
             #self.assertEqual(len(res['named_list_var']), 3)
             self.assertEqual(res['mat_var'].shape, (2, 2))
