@@ -85,6 +85,7 @@ mat_var = np.matrix([[1,2],[3,4]])
             iopub = kc.iopub_channel
             # create a data frame
             execute(kc=kc, code='''
+%use sos
 null_var = None
 ''')
             clear_channels(iopub)
