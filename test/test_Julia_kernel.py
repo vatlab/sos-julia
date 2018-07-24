@@ -104,7 +104,7 @@ null_var = None
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
             execute(kc=kc, code='''
-null_var = None
+%use sos
 num_var = 123
 import numpy
 import pandas
@@ -134,7 +134,6 @@ seri_var = list(seri_var)
 %dict num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 ''')
             res = get_result(iopub)
-            #self.assertEqual(res['null_var'], None)
             self.assertEqual(res['num_var'], 123)
             self.assertEqual(list(res['num_arr_var']), [1, 2, 3])
             self.assertEqual(res['logic_var'], True)
@@ -144,7 +143,6 @@ seri_var = list(seri_var)
             self.assertEqual(res['set_var'], {1, 2, '3'})
             self.assertEqual(res['list_var'], [1, 2, '3'])
             self.assertEqual(res['dict_var'], {'a': 1, 'b': 2, 'c': '3'})
-            #self.assertEqual(res['mat_var'].shape, (2,2))
             self.assertEqual(res['recursive_var'],  {
                              'a': {'b': 123}, 'c': True})
             self.assertEqual(res['comp_var'], 1 + 2j)
