@@ -198,7 +198,7 @@ end
 
 class sos_Julia:
     background_color = '#ebd8eb'
-    supported_kernels = {'Julia': ['julia-0.4', 'julia-0.5', 'julia-0.6', 'julia-0.7']}
+    supported_kernels = {'Julia': ['julia-?.?']}
     options = {
         'assignment_pattern': r'^([_A-Za-z0-9\.]+)\s*=.*$'
         }
