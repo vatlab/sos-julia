@@ -39,7 +39,7 @@ setup(name = "sos-julia",
     package_dir = {'': 'src'},
     install_requires=[
           'sos>=0.18.0',
-          'sos-notebook>=0.18.0',
+          'sos-notebook>=0.18.5',
       ],
     entry_points= '''
 [sos_languages]
