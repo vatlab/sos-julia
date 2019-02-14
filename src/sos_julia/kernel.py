@@ -136,7 +136,7 @@ function __julia_py_repr(obj)
   elseif isa(obj, Set)
     __julia_py_repr_set(obj)
   # type of NaN in Julia is Float64
-  elseif isa(obj, Void) || obj === NaN
+  elseif isa(obj, Cvoid) || obj === NaN
     return "None"
   elseif isa(obj, Dict)
     __julia_py_repr_dict_1(obj)
@@ -322,11 +322,11 @@ class sos_Julia:
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
         try:
-            response = self.sos_kernel.get_response('whos(r"sos")', ('stream',), name=('stdout',))[0][1]
-            all_vars = [x.strip().split()[0] for x in response['text'].split('\n') if x.strip()]
-            items += [x for x in all_vars if x.startswith('sos')]
+            response = self.sos_kernel.get_response('print(string(varinfo(r"sos")))', ('stream',), name=('stdout',))[0][1]
+            all_markdown_items = [x.strip() for x in response['text'].split('|')]
+            items += [x for x in all_markdown_items if x.startswith('sos')]
         except:
-            # if ther ei sno variable with name sos, the command will not produce any output
+            # if there is no variable with name sos, the command will not produce any output
             pass
         
         if not items:
