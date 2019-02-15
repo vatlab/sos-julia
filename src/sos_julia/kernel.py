@@ -114,7 +114,7 @@ end
 # namedarray is specific for list with names (and named vector in R)
 function __julia_py_repr_namedarray(obj)
   key = names(obj)[1]
-  val = [obj[i] for i in key]
+  val = [obj[i] for i in 1:length(key)]
   return "pandas.Series(" * "[" * join([__julia_py_repr(i) for i in val], ",") * "]," * "index=[" * join([__julia_py_repr(j) for j in key], ",") * "])"
 end
 function __julia_py_repr_set(obj)

@@ -100,14 +100,43 @@ null_var = None
             wait_for_idle(kc)
             #
 
+    def num_var_testGetPythonDataFromJulia(self):
+        # Python -> Julia
+        with sos_kernel() as kc:
+            iopub = kc.iopub_channel
+            # create a data frame
+            execute(kc=kc, code='''
+%use sos
+num_var = 123
+''')
+            clear_channels(iopub)
+            execute(kc=kc, code="%use Julia")
+            wait_for_idle(kc)
+            execute(kc=kc, code="%get num_var")
+            wait_for_idle(kc)
+            execute(kc=kc, code="num_var === 123")
+            res = get_display_data(iopub)
+            self.assertEqual(res, 'true')
+            execute(kc=kc, code="%dict -r")
+            wait_for_idle(kc)
+            execute(kc=kc, code="%put num_var")
+            wait_for_idle(kc)
+            execute(kc=kc, code="%use sos")
+            wait_for_idle(kc)
+            execute(kc=kc, code="%dict num_var")
+            res = get_result(iopub)
+            self.assertEqual(res['num_var'], 123)
+            wait_for_idle(kc)
+            #
+
     def testGetPythonDataFromJulia(self):
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
             execute(kc=kc, code='''
 %use sos
-num_var = 123
 import numpy
 import pandas
+first_var = 234
 num_arr_var = numpy.array([1, 2, 3])
 logic_var = True
 logic_arr_var = [True, False, True]
@@ -123,18 +152,17 @@ seri_var = pandas.Series([1,2,3,3,3,3])
             wait_for_idle(kc)
             execute(kc=kc, code='''\
 %use Julia
-%get num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%get first_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 %dict -r
-%put num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%put first_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 %use sos
 seri_var = list(seri_var)
 ''')
             wait_for_idle(kc)
             execute(kc=kc, code='''
-%dict num_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
+%dict first_var num_arr_var logic_var logic_arr_var char_var char_arr_var set_var list_var dict_var recursive_var comp_var seri_var
 ''')
             res = get_result(iopub)
-            self.assertEqual(res['num_var'], 123)
             self.assertEqual(list(res['num_arr_var']), [1, 2, 3])
             self.assertEqual(res['logic_var'], True)
             self.assertEqual(res['logic_arr_var'], [True, False, True])
