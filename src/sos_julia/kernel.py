@@ -94,7 +94,7 @@ end
 # Dataframe in Julia doesn't have rowname. Will keep tracking any update of Dataframes package in Julia
 function __julia_py_repr_dataframe(obj)
   tf = joinpath(tempname())
-  if !isdefined(:Feather)
+  if !isdefined(@__MODULE__, :Feather)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, obj)
@@ -102,10 +102,10 @@ function __julia_py_repr_dataframe(obj)
 end
 function __julia_py_repr_matrix(obj)
   tf = joinpath(tempname())
-  if !isdefined(:DataFrame)
+  if !isdefined(@__MODULE__, :DataFrame)
     return "SOS_JULIA_REQUIRE:dataframes"
   end
-  if !isdefined(:Feather)
+  if !isdefined(@__MODULE__, :Feather)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, convert(DataFrame, obj))
@@ -136,7 +136,7 @@ function __julia_py_repr(obj)
   elseif isa(obj, Set)
     __julia_py_repr_set(obj)
   # type of NaN in Julia is Float64
-  elseif isa(obj, Void) || obj === NaN
+  elseif isa(obj, Cvoid) || obj === NaN
     return "None"
   elseif isa(obj, Dict)
     __julia_py_repr_dict_1(obj)
@@ -264,7 +264,7 @@ class sos_Julia:
                         'See https://github.com/wesm/feather/tree/master/python for details.')
                 feather_tmp_ = tempfile.NamedTemporaryFile(suffix='.feather', delete=False).name
                 feather.write_dataframe(pandas.DataFrame(obj).copy(), feather_tmp_)
-                return 'Array(Feather.read("' + feather_tmp_ + '", nullable=false))'
+                return 'Array(Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
             elif isinstance(obj, pandas.DataFrame):
@@ -289,7 +289,7 @@ class sos_Julia:
                     feather.write_dataframe(data, feather_tmp_)
                     # use {!r} for path because the string might contain c:\ which needs to be
                     # double quoted.
-                return 'Feather.read("' + feather_tmp_ + '", nullable=false)'
+                return 'Feather.read("' + feather_tmp_ + '")'
             elif isinstance(obj, pandas.Series):
                 dat=list(obj.values)
                 ind=list(obj.index.values)
@@ -322,11 +322,11 @@ class sos_Julia:
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
         try:
-            response = self.sos_kernel.get_response('whos(r"sos")', ('stream',), name=('stdout',))[0][1]
-            all_vars = [x.strip().split()[0] for x in response['text'].split('\n') if x.strip()]
-            items += [x for x in all_vars if x.startswith('sos')]
+            response = self.sos_kernel.get_response('print(string(varinfo(r"sos")))', ('stream',), name=('stdout',))[0][1]
+            all_markdown_items = [x.strip() for x in response['text'].split('|')]
+            items += [x for x in all_markdown_items if x.startswith('sos')]
         except:
-            # if ther ei sno variable with name sos, the command will not produce any output
+            # if there is no variable with name sos, the command will not produce any output
             pass
         
         if not items:
