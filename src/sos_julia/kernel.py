@@ -264,7 +264,7 @@ class sos_Julia:
                         'See https://github.com/wesm/feather/tree/master/python for details.')
                 feather_tmp_ = tempfile.NamedTemporaryFile(suffix='.feather', delete=False).name
                 feather.write_dataframe(pandas.DataFrame(obj).copy(), feather_tmp_)
-                return 'Array(Feather.read("' + feather_tmp_ + '"))'
+                return 'convert(Matrix, Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
             elif isinstance(obj, pandas.DataFrame):
