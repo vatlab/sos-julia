@@ -100,7 +100,7 @@ null_var = None
             wait_for_idle(kc)
             #
 
-    def num_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_num_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -126,16 +126,16 @@ num_var = 123
             execute(kc=kc, code="%dict num_var")
             res = get_result(iopub)
             self.assertEqual(res['num_var'], 123)
-            wait_for_idle(kc)
             #
 
-    def num_arr_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_num_arr_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
             # create a data frame
             execute(kc=kc, code='''
 %use sos
+import numpy
 num_arr_var = numpy.array([1, 2, 3])
 ''')
             clear_channels(iopub)
@@ -152,9 +152,8 @@ num_arr_var = numpy.array([1, 2, 3])
             execute(kc=kc, code="%dict num_arr_var")
             res = get_result(iopub)
             self.assertEqual(list(res['num_arr_var']), [1, 2, 3])
-            wait_for_idle(kc)
 
-    def logic_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_logic_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -176,10 +175,9 @@ logic_var = True
             wait_for_idle(kc)
             execute(kc=kc, code="%dict logic_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['logic_var']), True)
-            wait_for_idle(kc)
+            self.assertEqual((res['logic_var']), True)
 
-    def logic_arr_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_logic_arr_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -201,10 +199,9 @@ logic_arr_var = [True, False, True]
             wait_for_idle(kc)
             execute(kc=kc, code="%dict logic_arr_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['logic_arr_var']), [True, False, True])
-            wait_for_idle(kc)
+            self.assertEqual((res['logic_arr_var']), [True, False, True])
 
-    def char_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_char_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -226,10 +223,9 @@ char_var = '1"23'
             wait_for_idle(kc)
             execute(kc=kc, code="%dict char_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['char_var']), '1"23')
-            wait_for_idle(kc)
+            self.assertEqual((res['char_var']), '1"23')
 
-    def char_arr_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_char_arr_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -251,10 +247,9 @@ char_arr_var = ['1', '2', '3']
             wait_for_idle(kc)
             execute(kc=kc, code="%dict char_arr_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['char_arr_var']), ['1', '2', '3'])
-            wait_for_idle(kc)
+            self.assertEqual((res['char_arr_var']), ['1', '2', '3'])
 
-    def list_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_list_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -276,10 +271,9 @@ list_var = [1, 2, '3']
             wait_for_idle(kc)
             execute(kc=kc, code="%dict list_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['list_var']), [1, 2, '3'])
-            wait_for_idle(kc)
+            self.assertEqual((res['list_var']), [1, 2, '3'])
 
-    def dict_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_dict_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -301,10 +295,9 @@ dict_var = dict(a=1, b=2, c='3')
             wait_for_idle(kc)
             execute(kc=kc, code="%dict dict_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['dict_var']), {'a': 1, 'b': 2, 'c': '3'})
-            wait_for_idle(kc)
+            self.assertEqual((res['dict_var']), {'a': 1, 'b': 2, 'c': '3'})
 
-    def set_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_set_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -326,10 +319,9 @@ set_var = {1, 2, '3'}
             wait_for_idle(kc)
             execute(kc=kc, code="%dict set_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['set_var']), {1, 2, '3'})
-            wait_for_idle(kc)
+            self.assertEqual((res['set_var']), {1, 2, '3'})
 
-    def recursive_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_recursive_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -353,9 +345,8 @@ recursive_var = {'a': {'b': 123}, 'c': True}
             res = get_result(iopub)
             self.assertEqual(res['recursive_var'],  {
                              'a': {'b': 123}, 'c': True})
-            wait_for_idle(kc)
 
-    def comp_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_comp_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
@@ -377,16 +368,16 @@ comp_var = 1+2j
             wait_for_idle(kc)
             execute(kc=kc, code="%dict comp_var")
             res = get_result(iopub)
-            self.assertEqual(list(res['comp_var']), 1+2j)
-            wait_for_idle(kc)
+            self.assertEqual((res['comp_var']), 1+2j)
 
-    def seri_var_testGetPythonDataFromJulia(self):
+    def testGetPythonDataFromJulia_seri_var(self):
         # Python -> Julia
         with sos_kernel() as kc:
             iopub = kc.iopub_channel
             # create a data frame
             execute(kc=kc, code='''
 %use sos
+import pandas
 seri_var = pandas.Series([1,2,3,3,3,3])
 ''')
             clear_channels(iopub)
@@ -405,10 +396,6 @@ seri_var = pandas.Series([1,2,3,3,3,3])
             execute(kc=kc, code="%dict seri_var")
             res = get_result(iopub)
             self.assertEqual(list(res['seri_var']), [1, 2, 3, 3, 3, 3])
-            wait_for_idle(kc)
-
-
-
 
     def testPutJuliaDataToPython(self):
         with sos_kernel() as kc:
