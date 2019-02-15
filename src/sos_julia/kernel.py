@@ -94,7 +94,7 @@ end
 # Dataframe in Julia doesn't have rowname. Will keep tracking any update of Dataframes package in Julia
 function __julia_py_repr_dataframe(obj)
   tf = joinpath(tempname())
-  if !isdefined(:Feather)
+  if !isdefined(@__MODULE__, :Feather)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, obj)
@@ -102,10 +102,10 @@ function __julia_py_repr_dataframe(obj)
 end
 function __julia_py_repr_matrix(obj)
   tf = joinpath(tempname())
-  if !isdefined(:DataFrame)
+  if !isdefined(@__MODULE__, :DataFrame)
     return "SOS_JULIA_REQUIRE:dataframes"
   end
-  if !isdefined(:Feather)
+  if !isdefined(@__MODULE__, :Feather)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, convert(DataFrame, obj))
