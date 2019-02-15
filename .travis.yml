@@ -39,6 +39,9 @@ before_install:
     - tar zxf julia-1.1.0-linux-x86_64.tar.gz
     - export PATH=julia-1.1.0/bin/:$PATH
     - julia -e "ENV[\"JUPYTER\"]=\"$(which jupyter)\";using Pkg;Pkg.add([\"IJulia\", \"Feather\", \"DataFrames\", \"NamedArrays\"])"
+    - julia -e 'using Feather'
+    - julia -e 'using DataFrames'
+    - julia -e 'using NamedArrays'
     - jupyter kernelspec list
 
 sudo: required
