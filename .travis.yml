@@ -34,16 +34,10 @@ before_install:
     # Julia
     # https://github.com/JuliaLang/julia/issues/12741
     - sudo apt-get install libgmp3-dev
-    - wget https://julialang-s3.julialang.org/bin/linux/x64/0.6/julia-0.6.3-linux-x86_64.tar.gz
-    - tar zxf julia-0.6.3-linux-x86_64.tar.gz
-    - export PATH=julia-d55cadc350/bin/:$PATH
-    - julia -e "ENV[\"JUPYTER\"]=\"$(which jupyter)\";Pkg.add(\"IJulia\")"
-    - julia -e 'Pkg.add("Feather")'
-    - julia -e 'Pkg.add("DataFrames")'
-    - julia -e 'Pkg.add("NamedArrays")'
-    - julia -e 'using Feather'
-    - julia -e 'using DataFrames'
-    - julia -e 'using NamedArrays'
+    - wget https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz
+    - tar zxf julia-1.1.0-linux-x86_64.tar.gz
+    - export PATH=julia-1.1.0/bin/:$PATH
+    - julia -e "ENV[\"JUPYTER\"]=\"$(which jupyter)\";using Pkg;Pkg.add([\"IJulia\", \"Feather\", \"DataFrames\", \"NamedArrays\"])"
     - jupyter kernelspec list
 
 sudo: required
