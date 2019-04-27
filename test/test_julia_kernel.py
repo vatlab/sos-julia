@@ -183,8 +183,7 @@ seri_var = list(seri_var)
             # create a data frame
             execute(kc=kc, code="""
 %use Julia
-null_var = NaN
-num_var = 123
+
 num_arr_var = [1, 2, 3]
 logic_var = true
 logic_arr_var = [true, true, false]

@@ -19,6 +19,7 @@ def homogeneous_type(seq):
     else:
         return True if all(isinstance(x, first_type) for x in iseq) else False
 
+
 '''
 NaN		None
 Bool		boolean
@@ -38,7 +39,8 @@ Dataframes.Dataframe		pandas.DataFrame
 '''
 
 julia_install_package = {
-   'feather': r'''
+    'feather':
+        r'''
 try
   using Feather
 catch
@@ -46,7 +48,8 @@ catch
   using Feather
 end
 ''',
-   'namedarray':  r'''
+    'namedarray':
+        r'''
 try
   using NamedArrays
 catch
@@ -54,7 +57,8 @@ catch
   using NamedArrays
 end
 ''',
-    'dataframes': r'''
+    'dataframes':
+        r'''
 try
   using DataFrames
 catch
@@ -199,9 +203,7 @@ end
 class sos_Julia:
     background_color = '#ebd8eb'
     supported_kernels = {'Julia': ['julia-?.?']}
-    options = {
-        'assignment_pattern': r'^([_A-Za-z0-9\.]+)\s*=.*$'
-        }
+    options = {'assignment_pattern': r'^([_A-Za-z0-9\.]+)\s*=.*$'}
     cd_command = 'cd("{dir}")'
 
     def __init__(self, sos_kernel, kernel_name='julia-0.6'):
@@ -214,13 +216,18 @@ class sos_Julia:
         if package in self.loaded:
             return True
         if package in julia_install_package:
-            self.sos_kernel.run_cell(julia_install_package[package], True, False,
-                    on_error=f'Install of package {package} is not supported.')
+            self.sos_kernel.run_cell(
+                julia_install_package[package],
+                True,
+                False,
+                on_error=f'Install of package {package} is not supported.')
             self.loaded.add(package)
             return True
         else:
-            self.sos_kernel.warn(f'Install of package {package} is not supported.')
+            self.sos_kernel.warn(
+                f'Install of package {package} is not supported.')
             return False
+
 
 #  support for %get
 #
@@ -228,6 +235,7 @@ class sos_Julia:
 #  by the julia kernel.
 #
 #
+
     def _julia_repr(self, obj):
         if isinstance(obj, bool):
             return 'true' if obj else 'false'
@@ -246,7 +254,9 @@ class sos_Julia:
         elif obj is None:
             return 'NaN'
         elif isinstance(obj, dict):
-            return 'Dict(' + ','.join('"{}" => {}'.format(x, self._julia_repr(y)) for x,y in obj.items()) + ')'
+            return 'Dict(' + ','.join(
+                '"{}" => {}'.format(x, self._julia_repr(y))
+                for x, y in obj.items()) + ')'
         elif isinstance(obj, set):
             return 'Set([' + ','.join(self._julia_repr(x) for x in obj) + '])'
         else:
@@ -260,10 +270,14 @@ class sos_Julia:
                 try:
                     import feather
                 except ImportError:
-                    raise UsageError('The feather-format module is required to pass numpy matrix as julia matrix(array)'
-                        'See https://github.com/wesm/feather/tree/master/python for details.')
-                feather_tmp_ = tempfile.NamedTemporaryFile(suffix='.feather', delete=False).name
-                feather.write_dataframe(pandas.DataFrame(obj).copy(), feather_tmp_)
+                    raise UsageError(
+                        'The feather-format module is required to pass numpy matrix as julia matrix(array)'
+                        'See https://github.com/wesm/feather/tree/master/python for details.'
+                    )
+                feather_tmp_ = tempfile.NamedTemporaryFile(
+                    suffix='.feather', delete=False).name
+                feather.write_dataframe(
+                    pandas.DataFrame(obj).copy(), feather_tmp_)
                 return 'convert(Matrix, Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
@@ -271,14 +285,19 @@ class sos_Julia:
                 try:
                     import feather
                 except ImportError:
-                    raise UsageError('The feather-format module is required to pass pandas DataFrame as julia.DataFrames'
-                        'See https://github.com/wesm/feather/tree/master/python for details.')
-                feather_tmp_ = tempfile.NamedTemporaryFile(suffix='.feather', delete=False).name
+                    raise UsageError(
+                        'The feather-format module is required to pass pandas DataFrame as julia.DataFrames'
+                        'See https://github.com/wesm/feather/tree/master/python for details.'
+                    )
+                feather_tmp_ = tempfile.NamedTemporaryFile(
+                    suffix='.feather', delete=False).name
                 try:
                     data = obj.copy()
                     # Julia DataFrame does not have index
                     if not isinstance(data.index, pandas.RangeIndex):
-                        self.sos_kernel.warn('Raw index is ignored because Julia DataFrame does not support raw index.') 
+                        self.sos_kernel.warn(
+                            'Raw index is ignored because Julia DataFrame does not support raw index.'
+                        )
                     feather.write_dataframe(data, feather_tmp_)
                 except Exception:
                     # if data cannot be written, we try to manipulate data
@@ -291,20 +310,21 @@ class sos_Julia:
                     # double quoted.
                 return 'Feather.read("' + feather_tmp_ + '")'
             elif isinstance(obj, pandas.Series):
-                dat=list(obj.values)
-                ind=list(obj.index.values)
-                ans='NamedArray(' + '[' + ','.join(self._julia_repr(x) for x in dat) + ']' + ',([' + ','.join(self._julia_repr(y) for y in ind) + '],))'
-                return ans.replace("'",'"')
+                dat = list(obj.values)
+                ind = list(obj.index.values)
+                ans = 'NamedArray(' + '[' + ','.join(
+                    self._julia_repr(x) for x in dat) + ']' + ',([' + ','.join(
+                        self._julia_repr(y) for y in ind) + '],))'
+                return ans.replace("'", '"')
             else:
                 return repr('Unsupported datatype {}'.format(short_repr(obj)))
-
-
-
 
     def get_vars(self, names):
         for name in names:
             if name.startswith('_'):
-                self.sos_kernel.warn('Variable {} is passed from SoS to kernel {} as {}'.format(name, self.kernel_name, '.' + name[1:]))
+                self.sos_kernel.warn(
+                    'Variable {} is passed from SoS to kernel {} as {}'.format(
+                        name, self.kernel_name, '.' + name[1:]))
                 newname = '.' + name[1:]
             else:
                 newname = name
@@ -315,20 +335,26 @@ class sos_Julia:
                 self.load('namedarray')
             if 'DataFrame' in julia_repr:
                 self.load('dataframes')
-            self.sos_kernel.run_cell('{} = {}'.format(newname, julia_repr), True, False,
-                                     on_error='Failed to put variable {} to julia'.format(name))
-
+            self.sos_kernel.run_cell(
+                '{} = {}'.format(newname, julia_repr),
+                True,
+                False,
+                on_error='Failed to put variable {} to julia'.format(name))
 
     def put_vars(self, items, to_kernel=None):
         # first let us get all variables with names starting with sos
         try:
-            response = self.sos_kernel.get_response('print(string(varinfo(r"sos")))', ('stream',), name=('stdout',))[0][1]
-            all_markdown_items = [x.strip() for x in response['text'].split('|')]
+            response = self.sos_kernel.get_response(
+                'print(string(varinfo(r"sos")))', ('stream',),
+                name=('stdout',))[0][1]
+            all_markdown_items = [
+                x.strip() for x in response['text'].split('|')
+            ]
             items += [x for x in all_markdown_items if x.startswith('sos')]
         except:
             # if there is no variable with name sos, the command will not produce any output
             pass
-        
+
         if not items:
             return {}
 
@@ -341,7 +367,8 @@ class sos_Julia:
                 # message if thosse packages are needed and "using" or "Add" them when needed.
                 #
                 py_repr = '__julia_py_repr({})'.format(item)
-                response = self.sos_kernel.get_response(py_repr, ('execute_result',))[0][1]
+                response = self.sos_kernel.get_response(
+                    py_repr, ('execute_result',))[0][1]
                 expr = response['data']['text/plain']
 
                 if expr.startswith('"SOS_JULIA_REQUIRE:'):
@@ -360,11 +387,12 @@ class sos_Julia:
                 # evaluate as raw string to correctly handle \\ etc
                 res[item] = eval(eval(expr))
             except Exception as e:
-                self.sos_kernel.warn('Failed to evaluate {!r}: {}'.format(expr, e))
+                self.sos_kernel.warn('Failed to evaluate {!r}: {}'.format(
+                    expr, e))
                 return None
         return res
 
     def sessioninfo(self):
-        ret = self.sos_kernel.get_response(r'versioninfo(true)',
-                ('stream',), name=('stdout',))
+        ret = self.sos_kernel.get_response(
+            r'versioninfo(true)', ('stream',), name=('stdout',))
         return '\n'.join(x[1]['text'] for x in ret)

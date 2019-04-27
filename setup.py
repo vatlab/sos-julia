@@ -12,17 +12,18 @@ with open('src/sos_julia/_version.py') as version:
             __version__ = eval(line.split('=')[1])
             break
 
-setup(name = "sos-julia",
-    version = __version__,
-    description = 'SoS Notebook extension for languages Julia',
-    author = 'Bo Peng',
-    url = 'https://github.com/vatlab/SOS',
-    author_email = 'bpeng@mdanderson.org',
-    maintainer = 'Bo Peng',
-    maintainer_email = 'bpeng@mdanderson.org',
-    license = '3-clause BSD',
-    include_package_data = True,
-    classifiers = [
+setup(
+    name="sos-julia",
+    version=__version__,
+    description='SoS Notebook extension for languages Julia',
+    author='Bo Peng',
+    url='https://github.com/vatlab/SOS',
+    author_email='bpeng@mdanderson.org',
+    maintainer='Bo Peng',
+    maintainer_email='bpeng@mdanderson.org',
+    license='3-clause BSD',
+    include_package_data=True,
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: BSD License',
@@ -34,15 +35,14 @@ setup(name = "sos-julia",
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
-        ],
-    packages = find_packages('src'),
-    package_dir = {'': 'src'},
+    ],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     install_requires=[
-          'sos>=0.18.0',
-          'sos-notebook>=0.18.5',
-      ],
-    entry_points= '''
+        'sos>=0.19.8',
+        'sos-notebook>=0.19.4',
+    ],
+    entry_points='''
 [sos_languages]
 Julia = sos_julia.kernel:sos_Julia
-'''
-)
+''')

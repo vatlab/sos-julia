@@ -6,6 +6,8 @@ os:
 language: python
 python:
     - "3.6"
+addons:
+    chrome: stable
 before_install:
     # Base SoS
     - sudo apt-get update
@@ -29,7 +31,7 @@ before_install:
     # SoS Notebook
     - sudo apt-get install libmagickwand-dev libmagickcore5-extra graphviz
     - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
-    - pip install pygments ipython wand graphviz sos sos-notebook
+    - pip install pygments ipython wand graphviz sos sos-notebook selenium
     - python -m sos_notebook.install
 
     # Julia
@@ -43,6 +45,10 @@ before_install:
     - julia -e 'using DataFrames'
     - julia -e 'using NamedArrays'
     - jupyter kernelspec list
+
+    # selenium
+    - wget https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip -d $HOME/miniconda/bin
 
 sudo: required
 services:

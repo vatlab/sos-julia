@@ -33,8 +33,8 @@ install:
     # Useful for debugging any issues with conda
     - conda info -a
     # packages required by SoS
-    - pip install jedi pyyaml psutil tqdm 
-    - pip install fasteners pygments ipython ptpython networkx pydot pydotplus nose 
+    - pip install jedi pyyaml psutil tqdm
+    - pip install fasteners pygments ipython ptpython networkx pydot pydotplus nose
     - pip install entrypoints numpy pandas sos sos-notebook
     - python -m sos_notebook.install
 
@@ -43,7 +43,7 @@ install:
     - conda install -c conda-forge feather-format
 
     # install sos
-    - pip install pytest
+    - pip install pytest selenium
     - pip install . -U
 
     # Download most recent Julia Windows binary
