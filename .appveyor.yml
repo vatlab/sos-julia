@@ -38,17 +38,13 @@ install:
     - pip install entrypoints numpy pandas sos sos-notebook
     - python -m sos_notebook.install
 
-    # install r kernel
-    - conda install -c r r-essentials r-feather
-    - conda install -c conda-forge feather-format
-
     # install sos
     - pip install pytest selenium
     - pip install . -U
 
     # Download most recent Julia Windows binary
     - ps: (new-object net.webclient).DownloadFile(
-        "https://julialang-s3.julialang.org/bin/winnt/x64/0.6/julia-0.6-latest-win64.exe",
+        "https://julialang-s3.julialang.org/bin/winnt/x64/1.1/julia-1.1.0-win64.exe",
         "C:\projects\julia-binary.exe")
     # Run installer silently, output to C:\projects\julia
     - C:\projects\julia-binary.exe /S /D=C:\projects\julia
