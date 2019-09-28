@@ -33,14 +33,6 @@ class TestInterface(NotebookTest):
         output = notebook.check_output('pwd()', kernel="Julia")
         assert os.path.realpath(tmpdir) == os.path.realpath(output.strip('"'))
 
-    def test_auto_vars(self, notebook):
-        '''Test automatic exchange of variables with names starting with sos'''
-        notebook.call('sosInSoS = 123', kernel="SoS")
-        assert '123' == notebook.check_output('sosInSoS', kernel='Julia')
-
-        notebook.call('sosInJulia = 12345', kernel="Julia")
-        assert '12345' == notebook.check_output('sosInJulia', kernel='SoS')
-
     def test_sessioninfo(self, notebook):
         '''test support for %sessioninfo'''
         notebook.call('println("This is Julia")', kernel="Julia")
