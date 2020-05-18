@@ -102,7 +102,7 @@ function __julia_py_repr_dataframe(obj)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, obj)
-  return "read_dataframe(r'" * tf * "')"
+  return "read_dataframe(\"" * tf * "\")"
 end
 function __julia_py_repr_matrix(obj)
   tf = joinpath(tempname())
@@ -113,7 +113,7 @@ function __julia_py_repr_matrix(obj)
     return "SOS_JULIA_REQUIRE:feather"
   end
   Feather.write(tf, convert(DataFrame, obj))
-  return "numpy.asmatrix(read_dataframe(r'" * tf * "'))"
+  return "numpy.asmatrix(read_dataframe(\"" * tf * "\"))"
 end
 # namedarray is specific for list with names (and named vector in R)
 function __julia_py_repr_namedarray(obj)
