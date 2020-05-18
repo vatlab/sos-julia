@@ -15,17 +15,31 @@ class TestDataExchange(NotebookTest):
         self._var_idx += 1
         return f'var{self._var_idx}'
 
-    def get_from_SoS(self, notebook, sos_expr):
+    def get_from_SoS(self, notebook, sos_expr, expect_error=False):
         var_name = self._var_name()
-        notebook.call(f'{var_name} = {sos_expr}', kernel='SoS')
+        notebook.call(
+            f'import pandas\nimport numpy\n{var_name} = {sos_expr}',
+            kernel='SoS')
         return notebook.check_output(
             f'''\
             %get {var_name}
             {var_name}''',
-            kernel='Julia')
+            kernel='Julia',
+            expect_error=expect_error)
 
     def put_to_SoS(self, notebook, julia_expr):
         var_name = self._var_name()
+        if 'DataFrame' in julia_expr:
+            notebook.call(
+                f'''\
+                try
+                    using DataFrames
+                catch
+                    Pkg.add("DataFrames")
+                    using DataFrames
+                end
+                ''',
+                kernel='Julia')
         notebook.call(
             f'''\
             %put {var_name}
@@ -85,9 +99,59 @@ class TestDataExchange(NotebookTest):
         #
         assert 'array([1.4, 2. ])' == self.put_to_SoS(notebook, '[1.4, 2]')
 
+    def test_get_num_colarray(self, notebook):
+        output = self.get_from_SoS(notebook, 'numpy.array([[11], [22], [33]])')
+        assert 'Array' in output and 'Int' in output and '22' in output
+
+        output = self.get_from_SoS(notebook,
+                                   'numpy.array([[11.11], [22.22], [33]])')
+        assert 'Array' in output and 'Float' in output and '22.22' in output
+        output = self.get_from_SoS(
+            notebook, 'numpy.array([[11.11, 13.1], [22.22, 35.1], [33, 27]])')
+        assert 'Array' in output and 'Float' in output and '22.22' in output
+
+    def test_get_num_matrix(self, notebook):
+        output = self.get_from_SoS(
+            notebook,
+            'numpy.matrix([[11, 22], [22, 23], [33, 35]])',
+            expect_error=True)
+        assert 'Array' in output
+        assert 'Int64' in output
+        assert '22' in output
+        assert '3×2' in output
+
+        output = self.get_from_SoS(
+            notebook,
+            'numpy.matrix([[11.11, 2, 3], [22.22, 4, 5], [33, 6, 7]])',
+            expect_error=False)
+        assert 'Array' in output
+        assert 'Float' in output
+        assert '22.22' in output
+
+    def test_get_dataframe(self, notebook):
+        output = self.get_from_SoS(
+            notebook, 'pandas.DataFrame([[11, 22], [22, 23], [33, 35]])')
+        assert 'rows' in output and 'columns' in output and '22' in output and '35' in output
+
+        output = self.get_from_SoS(
+            notebook,
+            '''pandas.DataFrame(dict(a=['aa', 'bb', 'cc'], val=[2, 4333, 5]))'''
+        )
+        assert '3 rows × 2 columns' in output and 'aa' in output and '4333' in output
+
+    def test_put_dataframe(self, notebook):
+        output = self.put_to_SoS(
+            notebook, 'DataFrame(A = 1:4, B = ["MMM", "FFFF", "FMF", "MFM"])')
+        assert 'MFM' in output and 'FFFF' in output
+
+    # def test_put_num_colarray(self, notebook):
+    #     assert 'array([ 99, 200])' == self.put_to_SoS(notebook, '[99, 200]')
+    #     #
+    #     assert 'array([1.4, 2. ])' == self.put_to_SoS(notebook, '[1.4, 2]')
+
     def test_get_logic_array(self, notebook):
         output = self.get_from_SoS(notebook, '[True, False, True]')
-        assert 'Array' in output and 'Bool' in output and 'false' in output
+        assert 'Array' in output and 'Bool' in output
 
     def test_put_logic_array(self, notebook):
         # Note that single element numeric array is treated as single value
