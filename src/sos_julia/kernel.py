@@ -304,7 +304,7 @@ class sos_Julia:
                         self.sos_kernel.warn(
                             'Raw index is ignored because Julia DataFrame does not support raw index.'
                         )
-                    feather.write_dataframe(data, feather_tmp_)
+                    feather.write_dataframe(data, feather_tmp_, version=1)
                 except Exception:
                     # if data cannot be written, we try to manipulate data
                     # frame to have consistent types and try again
