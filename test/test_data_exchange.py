@@ -111,22 +111,22 @@ class TestDataExchange(NotebookTest):
         assert 'Array' in output and 'Float' in output and '22.22' in output
 
     def test_get_num_matrix(self, notebook):
+        notebook.call(
+            '''\
+            import warnings
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            import feather''',
+            kernel='SoS')
         output = self.get_from_SoS(
-            notebook,
-            'numpy.matrix([[11, 22], [22, 23], [33, 35]])',
-            expect_error=True)
-        assert 'Array' in output
-        assert 'Int64' in output
-        assert '22' in output
-        assert '3×2' in output
+            notebook, 'numpy.matrix([[11, 22], [22, 23], [33, 35]])')
+        assert 'Array' in output and 'Int64' in output
+        assert '22' in output and '3×2' in output
 
         output = self.get_from_SoS(
             notebook,
             'numpy.matrix([[11.11, 2, 3], [22.22, 4, 5], [33, 6, 7]])',
             expect_error=False)
-        assert 'Array' in output
-        assert 'Float' in output
-        assert '22.22' in output
+        assert 'Array' in output and 'Float' in output and '22.22' in output
 
     def test_get_dataframe(self, notebook):
         output = self.get_from_SoS(
