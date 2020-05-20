@@ -282,7 +282,8 @@ class sos_Julia:
                 feather.write_dataframe(
                     pandas.DataFrame(
                         obj, columns=map(str, range(obj.shape[1]))),
-                    feather_tmp_)
+                    feather_tmp_,
+                    version=1)
                 return 'convert(Matrix, Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
@@ -310,7 +311,7 @@ class sos_Julia:
                     for c in data.columns:
                         if not homogeneous_type(data[c]):
                             data[c] = [str(x) for x in data[c]]
-                    feather.write_dataframe(data, feather_tmp_)
+                    feather.write_dataframe(data, feather_tmp_, version=1)
                     # use {!r} for path because the string might contain c:\ which needs to be
                     # double quoted.
                 return 'Feather.read("' + feather_tmp_ + '")'
