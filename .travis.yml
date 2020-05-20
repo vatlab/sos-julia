@@ -28,7 +28,7 @@ before_install:
     - conda install -c conda-forge feather-format=0.3.1
 
     # SoS Notebook
-    - sudo apt-get install libmagickwand-dev libmagickcore5-extra graphviz
+    - sudo apt-get install libmagickwand-dev graphviz
     - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
     - pip install pygments ipython wand graphviz sos sos-notebook selenium
     - python -m sos_notebook.install
