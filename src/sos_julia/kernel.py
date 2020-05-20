@@ -279,11 +279,19 @@ class sos_Julia:
                     )
                 feather_tmp_ = tempfile.NamedTemporaryFile(
                     suffix='.feather', delete=False).name
-                feather.write_dataframe(
-                    pandas.DataFrame(
-                        obj, columns=map(str, range(obj.shape[1]))),
-                    feather_tmp_,
-                    version=1)
+                try:
+                    feather.write_dataframe(
+                        pandas.DataFrame(
+                            obj, columns=map(str, range(obj.shape[1]))),
+                        feather_tmp_,
+                        version=1)
+                except TypeError:
+                    # earlier version of feather-format does not support parameter version
+                    # V1 will be used in the old versin of feather anyway
+                    feather.write_dataframe(
+                        pandas.DataFrame(
+                            obj, columns=map(str, range(obj.shape[1]))),
+                        feather_tmp_)
                 return 'convert(Matrix, Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
@@ -304,14 +312,22 @@ class sos_Julia:
                         self.sos_kernel.warn(
                             'Raw index is ignored because Julia DataFrame does not support raw index.'
                         )
-                    feather.write_dataframe(data, feather_tmp_, version=1)
+                    try:
+                        feather.write_dataframe(data, feather_tmp_, version=1)
+                    except TypeError:
+                        # earlier version of feather-format does not support parameter version
+                        feather.write_dataframe(data, feather_tmp_)
                 except Exception:
                     # if data cannot be written, we try to manipulate data
                     # frame to have consistent types and try again
                     for c in data.columns:
                         if not homogeneous_type(data[c]):
                             data[c] = [str(x) for x in data[c]]
-                    feather.write_dataframe(data, feather_tmp_, version=1)
+                    try:
+                        feather.write_dataframe(data, feather_tmp_, version=1)
+                    except TypeError:
+                        # earlier version of feather-format does not support parameter version
+                        feather.write_dataframe(data, feather_tmp_)
                     # use {!r} for path because the string might contain c:\ which needs to be
                     # double quoted.
                 return 'Feather.read("' + feather_tmp_ + '")'
