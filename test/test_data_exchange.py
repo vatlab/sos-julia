@@ -15,7 +15,7 @@ class TestDataExchange(NotebookTest):
         self._var_idx += 1
         return f'var{self._var_idx}'
 
-    def get_from_SoS(self, notebook, sos_expr, expect_error=False):
+    def get_from_SoS(self, notebook, sos_expr):
         var_name = self._var_name()
         notebook.call(
             f'import pandas\nimport numpy\n{var_name} = {sos_expr}',
@@ -24,8 +24,7 @@ class TestDataExchange(NotebookTest):
             f'''\
             %get {var_name}
             {var_name}''',
-            kernel='Julia',
-            expect_error=expect_error)
+            kernel='Julia')
 
     def put_to_SoS(self, notebook, julia_expr):
         var_name = self._var_name()
@@ -124,8 +123,7 @@ class TestDataExchange(NotebookTest):
 
         output = self.get_from_SoS(
             notebook,
-            'numpy.matrix([[11.11, 2, 3], [22.22, 4, 5], [33, 6, 7]])',
-            expect_error=False)
+            'numpy.matrix([[11.11, 2, 3], [22.22, 4, 5], [33, 6, 7]])')
         assert 'Array' in output and 'Float' in output and '22.22' in output
 
     def test_get_dataframe(self, notebook):

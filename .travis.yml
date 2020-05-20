@@ -25,7 +25,7 @@ before_install:
     - pip install fasteners pygments networkx pydot pydotplus
     - pip install entrypoints jupyter coverage codacy-coverage pytest pytest-cov python-coveralls
     - conda install pandas numpy
-    - conda install -c conda-forge feather-format=0.3.1
+    - conda install -c conda-forge feather-format
 
     # SoS Notebook
     - sudo apt-get install libmagickwand-dev graphviz
