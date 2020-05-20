@@ -44,7 +44,7 @@ julia_install_package = {
 try
   using Feather
 catch
-  import Pkg
+  using Pkg
   Pkg.add("Feather")
   using Feather
 end
@@ -54,7 +54,7 @@ end
 try
   using NamedArrays
 catch
-  import Pkg
+  using Pkg
   Pkg.add("NamedArrays")
   using NamedArrays
 end
@@ -64,7 +64,7 @@ end
 try
   using DataFrames
 catch
-  import Pkg
+  using Pkg
   Pkg.add("DataFrames")
   using DataFrames
 end
