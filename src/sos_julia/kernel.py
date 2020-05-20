@@ -280,7 +280,9 @@ class sos_Julia:
                 feather_tmp_ = tempfile.NamedTemporaryFile(
                     suffix='.feather', delete=False).name
                 feather.write_dataframe(
-                    pandas.DataFrame(obj).copy(), feather_tmp_)
+                    pandas.DataFrame(
+                        obj, columns=map(str, range(obj.shape[1]))),
+                    feather_tmp_)
                 return 'convert(Matrix, Feather.read("' + feather_tmp_ + '"))'
             elif isinstance(obj, numpy.ndarray):
                 return '[' + ','.join(self._julia_repr(x) for x in obj) + ']'
