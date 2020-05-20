@@ -1,4 +1,3 @@
-dist: trusty
 group: edge
 os:
     - linux
@@ -29,7 +28,7 @@ before_install:
     - conda install -c conda-forge feather-format=0.3.1
 
     # SoS Notebook
-    - sudo apt-get install libmagickwand-dev libmagickcore5-extra graphviz
+    - sudo apt-get install libmagickwand-dev graphviz
     - pip install jedi notebook nbconvert nbformat pyyaml psutil tqdm scipy
     - pip install pygments ipython wand graphviz sos sos-notebook selenium
     - python -m sos_notebook.install
@@ -47,7 +46,7 @@ before_install:
     - jupyter kernelspec list
 
     # selenium
-    - wget https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
+    - wget https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_linux64.zip
     - unzip chromedriver_linux64.zip -d $HOME/miniconda/bin
 
 sudo: required
@@ -65,3 +64,4 @@ notifications:
             - ben.bob@gmail.com
         on_success: never
         on_failure: always
+
