@@ -40,7 +40,7 @@ setup(
     package_dir={'': 'src'},
     install_requires=[
         'sos>=0.19.8',
-        'sos-notebook>=0.19.4',
+        'sos-notebook>=0.24.0',
     ],
     entry_points='''
 [sos_languages]
